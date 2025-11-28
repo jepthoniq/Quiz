@@ -1,0 +1,367 @@
+import React, { useState } from 'react';
+import { Languages, CheckCircle, XCircle, RefreshCw, BookOpen, Code, Trophy } from 'lucide-react';
+
+const QuizApp = () => {
+  const [isArabic, setIsArabic] = useState(false);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
+  const [praiseMessages, setPraiseMessages] = useState<Record<number, string>>({});
+
+  const praises = [
+    "عاشت ايدك يابطل",
+    "احسنت ياوردة",
+    "يحرسك الحسين",
+    "ميسي المسرحية انتَ",
+    "روح حسين علي راضي عليك"
+  ];
+
+  // Data extracted directly from the uploaded image
+  const questions = [
+    {
+      id: 1,
+      questionEn: "Who wrote the play 'Arms and the Man' and in what year?",
+      questionAr: "من كتب مسرحية 'السلاح والرجل' وفي أي عام؟",
+      optionsEn: [
+        "William Shakespeare in 1894",
+        "George Bernard Shaw in 1894",
+        "George Bernard Shaw in 1885",
+        "Charles Dickens in 1900"
+      ],
+      optionsAr: [
+        "ويليام شكسبير في 1894",
+        "جورج برنارد شو في 1894",
+        "جورج برنارد شو في 1885",
+        "تشارلز ديكنز في 1900"
+      ],
+      correct: 1 // Index of correct answer
+    },
+    {
+      id: 2,
+      questionEn: "The play takes place during which historical event?",
+      questionAr: "تدور أحداث المسرحية خلال أي حدث تاريخي؟",
+      optionsEn: [
+        "The World War I",
+        "The Crimean War",
+        "The Serbo-Bulgarian War (1885)",
+        "The French Revolution"
+      ],
+      optionsAr: [
+        "الحرب العالمية الأولى",
+        "حرب القرم",
+        "الحرب الصربية البلغارية (1885)",
+        "الثورة الفرنسية"
+      ],
+      correct: 2
+    },
+    {
+      id: 3,
+      questionEn: "How is the Serbo-Bulgarian War described in the context of the play?",
+      questionAr: "كيف تم وصف الحرب الصربية البلغارية في سياق المسرحية؟",
+      optionsEn: [
+        "Long, heroic, and well-organized",
+        "Short, poorly organized, and not heroic",
+        "Glorious and romantic",
+        "A tragic defeat for Bulgaria"
+      ],
+      optionsAr: [
+        "طويلة، بطولية، ومنظمة بشكل جيد",
+        "قصيرة، سيئة التنظيم، وليست بطولية",
+        "مجيدة ورومانسية",
+        "هزيمة مأساوية لبلغاريا"
+      ],
+      correct: 1
+    },
+    {
+      id: 4,
+      questionEn: "In the 1800s, what was the common belief about war and soldiers?",
+      questionAr: "في القرن التاسع عشر (1800s)، ماذا كان الاعتقاد السائد حول الحرب والجنود؟",
+      optionsEn: [
+        "War was foolish and soldiers were victims",
+        "War was noble and soldiers were brave heroes",
+        "War was necessary only for defense",
+        "Soldiers were practical professionals"
+      ],
+      optionsAr: [
+        "الحرب كانت حمقاء والجنود ضحايا",
+        "الحرب كانت نبيلة والجنود أبطال شجعان",
+        "الحرب كانت ضرورية للدفاع فقط",
+        "الجنود كانوا محترفين عمليين"
+      ],
+      correct: 1
+    },
+    {
+      id: 5,
+      questionEn: "What did George Bernard Shaw want to show about war in this play?",
+      questionAr: "ماذا أراد جورج برنارد شو أن يظهر عن الحرب في هذه المسرحية؟",
+      optionsEn: [
+        "That it is the highest form of patriotism",
+        "That it is not romantic or glorious, but practical and sometimes foolish",
+        "That it builds character in young men",
+        "That the Serbo-Bulgarian war was the most important war in history"
+      ],
+      optionsAr: [
+        "أنها أسمى أشكال الوطنية",
+        "أنها ليست رومانسية أو مجيدة، بل عملية وأحياناً حمقاء",
+        "أنها تبني الشخصية عند الشباب",
+        "أن الحرب الصربية البلغارية كانت أهم حرب في التاريخ"
+      ],
+      correct: 1
+    },
+    {
+      id: 6,
+      questionEn: "The play specifically makes fun of romantic ideas about which two things?",
+      questionAr: "تسخر المسرحية بشكل خاص من الأفكار الرومانسية حول أي شيئين؟",
+      optionsEn: [
+        "Wealth and Poverty",
+        "Politics and Religion",
+        "Love and Heroism",
+        "Art and Science"
+      ],
+      optionsAr: [
+        "الثروة والفقر",
+        "السياسة والدين",
+        "الحب والبطولة",
+        "الفن والعلم"
+      ],
+      correct: 2
+    },
+    {
+      id: 7,
+      questionEn: "What social changes were happening in Europe during this time?",
+      questionAr: "ما هي التغيرات الاجتماعية التي كانت تحدث في أوروبا خلال هذا الوقت؟",
+      optionsEn: [
+        "People started questioning class differences and social traditions",
+        "People were becoming more religious",
+        "Monarchies were becoming stronger",
+        "Everyone wanted to join the army"
+      ],
+      optionsAr: [
+        "بدأ الناس يشككون في الفوارق الطبقية والتقاليد الاجتماعية",
+        "أصبح الناس أكثر تديناً",
+        "أصبحت الملكيات أقوى",
+        "أراد الجميع الانضمام إلى الجيش"
+      ],
+      correct: 0
+    },
+    {
+      id: 8,
+      questionEn: "How did Shaw use the play to criticize class inequality?",
+      questionAr: "كيف استخدم شو المسرحية لنقد عدم المساواة الطبقية؟",
+      optionsEn: [
+        "By showing that rich people are evil",
+        "By showing that poor people should revolt",
+        "By showing that intelligence and goodness are not limited to rich people",
+        "By ignoring the servants characters"
+      ],
+      optionsAr: [
+        "من خلال إظهار أن الأغنياء أشرار",
+        "من خلال إظهار أن الفقراء يجب أن يثوروا",
+        "من خلال إظهار أن الذكاء والخير لا يقتصران على الأغنياء",
+        "من خلال تجاهل شخصيات الخدم"
+      ],
+      correct: 2
+    },
+    {
+      id: 9,
+      questionEn: "The play reflects Shaw's view of life as being:",
+      questionAr: "تعكس المسرحية نظرة شو للحياة على أنها:",
+      optionsEn: [
+        "Dreamy and nostalgic",
+        "Modern and realistic",
+        "Tragic and hopeless",
+        "Traditional and conservative"
+      ],
+      optionsAr: [
+        "حالمة وتحن للماضي",
+        "حديثة وواقعية",
+        "مأساوية ويائسة",
+        "تقليدية ومحافظة"
+      ],
+      correct: 1
+    }
+  ];
+
+  const handleOptionClick = (questionId: number, optionIndex: number) => {
+    if (selectedAnswers[questionId] !== undefined) return;
+    
+    // Check if correct to set praise message
+    const question = questions.find(q => q.id === questionId);
+    if (question && optionIndex === question.correct) {
+      const randomPraise = praises[Math.floor(Math.random() * praises.length)];
+      setPraiseMessages(prev => ({
+        ...prev,
+        [questionId]: randomPraise
+      }));
+    }
+
+    setSelectedAnswers(prev => ({
+      ...prev,
+      [questionId]: optionIndex
+    }));
+  };
+
+  const calculateScore = () => {
+    let score = 0;
+    questions.forEach(q => {
+      if (selectedAnswers[q.id] === q.correct) {
+        score++;
+      }
+    });
+    return score;
+  };
+
+  const resetQuiz = () => {
+    setSelectedAnswers({});
+    setPraiseMessages({});
+    window.scrollTo(0, 0);
+  };
+
+  const answeredCount = Object.keys(selectedAnswers).length;
+
+  return (
+    <div className="min-h-screen bg-slate-100 font-sans pb-32" dir={isArabic ? 'rtl' : 'ltr'}>
+      {/* Header */}
+      <header className="bg-indigo-700 text-white p-4 shadow-lg sticky top-0 z-20 rounded-b-3xl">
+        <div className="max-w-3xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-6 h-6 text-indigo-200" />
+            <h1 className="text-xl font-bold tracking-tight">
+              {isArabic ? "مراجعة: السلاح والرجل" : "Review: Arms and the Man"}
+            </h1>
+          </div>
+          
+          <button 
+            onClick={() => setIsArabic(!isArabic)}
+            className="flex items-center gap-2 bg-indigo-600/50 hover:bg-indigo-600 px-4 py-2 rounded-full transition-all text-sm font-semibold backdrop-blur-sm border border-indigo-400/30"
+          >
+            <Languages className="w-4 h-4" />
+            {isArabic ? "English" : "عربي"}
+          </button>
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto p-4 pt-6">
+        
+        {/* Progress Bar */}
+        <div className="mb-6 bg-white p-4 rounded-3xl shadow-sm border border-slate-200 flex items-center justify-between">
+          <span className="text-slate-500 font-medium">
+            {isArabic ? "التقدم:" : "Progress:"}
+          </span>
+          <div className="flex-1 mx-4 h-3 bg-slate-100 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-indigo-500 transition-all duration-500 ease-out rounded-full"
+              style={{ width: `${(answeredCount / questions.length) * 100}%` }}
+            />
+          </div>
+          <span className="font-bold text-indigo-700">
+            {answeredCount} / {questions.length}
+          </span>
+        </div>
+
+        {/* Questions List */}
+        <div className="space-y-6">
+          {questions.map((q) => {
+            const userSelection = selectedAnswers[q.id];
+            const isAnswered = userSelection !== undefined;
+            const currentOptions = isArabic ? q.optionsAr : q.optionsEn;
+            const praise = praiseMessages[q.id];
+            
+            return (
+              <div key={q.id} className="bg-white rounded-3xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-lg">
+                <div className="p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+                  <span className="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full mb-3">
+                    {isArabic ? `سؤال ${q.id}` : `Question ${q.id}`}
+                  </span>
+                  <h3 className="text-lg font-bold text-slate-800 leading-snug">
+                    {isArabic ? q.questionAr : q.questionEn}
+                  </h3>
+                </div>
+
+                <div className="p-4 space-y-3">
+                  {currentOptions.map((option, optIndex) => {
+                    let btnClass = "w-full text-left p-4 rounded-2xl transition-all duration-200 border-2 relative group ";
+                    
+                    if (isAnswered) {
+                      if (optIndex === q.correct) {
+                        // Correct Answer Style
+                        btnClass += "bg-green-100 border-green-500 text-green-900 font-medium shadow-sm ";
+                      } else if (userSelection === optIndex) {
+                        // Wrong User Selection Style
+                        btnClass += "bg-red-50 border-red-500 text-red-900 opacity-90 ";
+                      } else {
+                        // Other unselected options
+                        btnClass += "border-transparent text-slate-400 opacity-50 ";
+                      }
+                    } else {
+                      // Default Unanswered Style
+                      btnClass += "bg-slate-50 border-slate-200 text-slate-700 hover:bg-white hover:border-indigo-300 hover:shadow-md hover:-translate-y-0.5 ";
+                    }
+
+                    return (
+                      <button
+                        key={optIndex}
+                        onClick={() => handleOptionClick(q.id, optIndex)}
+                        disabled={isAnswered}
+                        className={btnClass}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="pr-6">{option}</span>
+                          {isAnswered && optIndex === q.correct && (
+                            <CheckCircle className="w-6 h-6 text-green-600 shrink-0 absolute right-4 rtl:right-auto rtl:left-4" />
+                          )}
+                          {isAnswered && userSelection === optIndex && optIndex !== q.correct && (
+                            <XCircle className="w-6 h-6 text-red-600 shrink-0 absolute right-4 rtl:right-auto rtl:left-4" />
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+
+                  {/* Praise Message Section */}
+                  {isAnswered && praise && (
+                    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-2xl animate-pulse">
+                      <div className="flex items-center justify-center gap-2 text-yellow-800 font-bold">
+                        <Trophy className="w-5 h-5 text-yellow-600" />
+                        <span>{praise}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </main>
+
+      {/* Footer / Results Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] z-30">
+        <div className="max-w-3xl mx-auto p-3">
+          <div className="flex flex-col items-center justify-center gap-2">
+            
+            {/* Small Restart Button */}
+            <button
+              onClick={resetQuiz}
+              className="flex items-center gap-2 py-2 px-4 rounded-full text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-md active:scale-95 transition-all"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              {isArabic ? "إعادة الاختبار" : "Restart Quiz"}
+            </button>
+          
+            {/* Credits Section */}
+            <div className="flex items-center justify-center text-slate-400 gap-2 text-[10px] font-medium tracking-wide">
+               <Code className="w-3 h-3" />
+               <span>
+                 {isArabic 
+                   ? <span>تمت البرمجة من قبل <span className="text-indigo-500 font-bold">حسين علي الجبوري</span></span>
+                   : <span>Programmed by <span className="text-indigo-500 font-bold">Hussein Ali Al-Jubouri</span></span>
+                 }
+               </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default QuizApp;
+
